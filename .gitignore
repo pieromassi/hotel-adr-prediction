@@ -1,0 +1,22 @@
+# Ambiente virtuale e cache Python
+/.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# File di sistema
+.DS_Store
+Thumbs.db
+
+# Configurazione locale e credenziali
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Elenco locale dei file
+/structure.txt
+
+# Dataset originale, CSV intermedi e modello addestrato
+/Dati/*.csv
+/03_DashBoard/modello_r_f/random_forest_model.joblib
