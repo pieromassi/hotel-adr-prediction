@@ -1,59 +1,61 @@
-# Progetto — Previsione ADR alberghiero
+# Project — Hotel ADR Prediction
 
-Il progetto stima l’ADR (*Average Daily Rate*), la tariffa media giornaliera di una camera, a partire dalle caratteristiche delle prenotazioni del dataset *Hotel Booking Demand*. La dashboard Streamlit permette di esplorare i dati e stimare l’ADR per una prenotazione.
+This project was developed during GiGroup's Junior Data Scientist Academy in collaboration with Mariapia Strazzella, Lorenzo Quintè, and Costanza Pizzi.
 
-## Requisiti
+The project estimates ADR (*Average Daily Rate*), the average daily room rate, using booking features from the *Hotel Booking Demand* dataset. The Streamlit dashboard lets you explore the data and estimate the ADR for a booking.
 
-- Python 3.14 o superiore (come specificato nella configurazione originale del progetto).
-- Mantieni la struttura delle cartelle del repository.
+## Requirements
 
-## Installazione
+- Python 3.14 or later (as specified in the original project configuration).
+- Keep the repository's folder structure intact.
 
-1. Clonare il repository da GitHub oppure scaricarlo come ZIP ed estrarlo.
-2. Aprire un terminale nella cartella principale del progetto, quella che contiene `requirements.txt` e la cartella `03_DashBoard`.
-3. Installare le dipendenze:
+## Installation
+
+1. Clone the repository from GitHub or download it as a ZIP file and extract it.
+2. Open a terminal in the project root, which contains `requirements.txt` and the `03_DashBoard` folder.
+3. Install the dependencies:
 
    ```bash
    python -m pip install -r requirements.txt
    ```
 
-   Su Windows, se `python` non è riconosciuto, provare `py -m pip install -r requirements.txt`.
+   On Windows, if `python` is not recognized, try `py -m pip install -r requirements.txt`.
 
-## Avvio della dashboard
+## Running the Dashboard
 
-Dopo l’installazione puoi avviare direttamente la dashboard se sono presenti questi quattro file, con i percorsi indicati a partire da `03_DashBoard/`.
+After installation, you can launch the dashboard directly if the following four files are present. The paths are relative to `03_DashBoard/`.
 
 - `DashBoard_data/dashboard_data.csv`
 - `modello_r_f/random_forest_model.joblib`
 - `modello_r_f/model_features.json`
 - `modello_r_f/model_metrics.json`
 
-Al primo avvio dopo il clone, segui la sezione [Notebook](#notebook) per generare `random_forest_model.joblib` e gli altri artefatti eventualmente mancanti.
+Before launching the dashboard for the first time after cloning the repository, follow the [Notebook](#notebook) section to generate `random_forest_model.joblib` and any other missing artifacts.
 
-Dalla cartella principale del progetto, eseguire:
+From the project root, run:
 
 ```bash
 python -m streamlit run 03_DashBoard/Hotel_booking_dashboard/App.py
 ```
 
-Streamlit mostrerà nel terminale l'indirizzo locale della dashboard (generalmente `http://localhost:8501`). Per interromperla, premere `Ctrl+C` nel terminale.
+Streamlit will display the dashboard's local address in the terminal (usually `http://localhost:8501`). To stop the dashboard, press `Ctrl+C` in the terminal.
 
 ## Notebook
 
-Per riprodurre l’analisi, scarica il CSV del dataset [Hotel Booking Demand](https://www.kaggle.com/datasets/jessemostipak/hotel-booking-demand/data) da Kaggle e salvalo come `Dati/DataFrame.csv`. Crea le cartelle `Dati/`, `03_DashBoard/DashBoard_data/` e `03_DashBoard/modello_r_f/` se non sono già presenti.
+To reproduce the analysis, download the [Hotel Booking Demand](https://www.kaggle.com/datasets/jessemostipak/hotel-booking-demand/data) CSV from Kaggle and save it as `Dati/DataFrame.csv`. Create the `Dati/`, `03_DashBoard/DashBoard_data/`, and `03_DashBoard/modello_r_f/` folders if they do not already exist.
 
-I notebook vanno eseguiti nell'ordine:
+Run the notebooks in this order:
 
-1. `00_DataExploration/data_cleaning.ipynb` pulisce il dataset e genera `Dati/DataFrame_00.csv`.
-2. `01_FeatureSelection/feature_selection.ipynb` seleziona le variabili e genera `Dati/DataFrame_01.csv` e `dashboard_data.csv`.
-3. `02_modelli/modelli.ipynb` confronta i modelli di regressione ed esporta la Random Forest e i due file JSON.
+1. `00_DataExploration/data_cleaning.ipynb` cleans the dataset and generates `Dati/DataFrame_00.csv`.
+2. `01_FeatureSelection/feature_selection.ipynb` selects the features and generates `Dati/DataFrame_01.csv` and `dashboard_data.csv`.
+3. `02_modelli/modelli.ipynb` compares the regression models and exports the Random Forest model and the two JSON files.
 
-Per aprirli, avviare Jupyter dalla cartella principale:
+To open the notebooks, launch Jupyter from the project root:
 
 ```bash
 python -m jupyter notebook
 ```
 
-## Risultati
+## Results
 
-Sul test set, ottenuto con uno split casuale del 30%, la Random Forest ha ottenuto un MAE di 8,36 €, un RMSE di 14,64 € e un R² di 0,898. Il Dummy Regressor ha ottenuto un MAE di 34,10 €. La selezione delle variabili è stata condotta sull’intero dataset prima dello split.
+On the test set, which consisted of a random 30% of the data, the Random Forest achieved an MAE of €8.36, an RMSE of €14.64, and an R² of 0.898. The Dummy Regressor achieved an MAE of €34.10. Feature selection was performed on the full dataset before the split.

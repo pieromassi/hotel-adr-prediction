@@ -9,7 +9,7 @@ import streamlit as st
 # 1. CONFIGURAZIONE DELLA PAGINA
 # --------------------------------------------------
 st.set_page_config(
-    page_title="Analisi delle prenotazioni alberghiere",
+    page_title="Hotel Booking Analysis",
     page_icon="H",
     layout="wide"
 )
@@ -48,7 +48,7 @@ missing_files = [
     if not path.exists()
 ]
 if missing_files:
-    st.error("Mancano alcuni file necessari:")
+    st.error("Some required files are missing:")
     for path in missing_files:
         st.write(path)
     st.stop()
@@ -69,12 +69,12 @@ metrics = load_json(METRICS_PATH)
 # --------------------------------------------------
 st.sidebar.title("Hotel Analytics")
 page = st.sidebar.radio(
-    "Navigazione",
+    "Navigation",
     [
         "Dashboard",
-        "Previsione ADR",
-        "Esplora i dati",
-        "Modello"
+        "ADR Prediction",
+        "Explore Data",
+        "Model"
     ]
 )
 st.sidebar.markdown("---")
@@ -84,42 +84,42 @@ st.sidebar.caption("Hotel Booking Demand")
 # 4. DASHBOARD
 # --------------------------------------------------
 if page == "Dashboard":
-    st.title("Analisi delle prenotazioni alberghiere")
+    st.title("Hotel Booking Analysis")
     st.write(
-        "Esplora i dati delle prenotazioni alberghiere e stima la "
-        "tariffa media giornaliera (ADR)."
+        "Explore hotel booking data and estimate the "
+        "average daily rate (ADR)."
     )
     col1, col2, col3 = st.columns(3)
     with col1:
         st.metric(
-            "Record totali",
+            "Total Records",
             f"{len(df):,}"
         )
     with col2:
         st.metric(
-            "ADR medio",
+            "Average ADR",
             f"€{df['adr'].mean():.2f}"
         )
     with col3:
         st.metric(
-            "ADR mediano",
+            "Median ADR",
             f"€{df['adr'].median():.2f}"
         )
     st.markdown("---")
     left, right = st.columns(2)
     with left:
-        st.subheader("Distribuzione dell'ADR")
+        st.subheader("ADR Distribution")
         st.plotly_chart(
             __import__("plotly.express", fromlist=[""]).histogram(
                 df,
                 x="adr",
                 nbins=40,
-                title="Distribuzione delle tariffe giornaliere delle camere"
+                title="Distribution of Daily Room Rates"
             ),
             use_container_width=True
         )
     with right:
-        st.subheader("ADR medio per hotel")
+        st.subheader("Average ADR by Hotel")
         if "hotel" in df.columns:
             hotel_adr = (
                 df.groupby("hotel", as_index=False)["adr"]
@@ -130,18 +130,18 @@ if page == "Dashboard":
                 hotel_adr.set_index("hotel")["adr"]
             )
         else:
-            st.info("La colonna hotel non è disponibile.")
-    st.subheader("Anteprima del dataset")
+            st.info("The hotel column is not available.")
+    st.subheader("Dataset Preview")
     st.dataframe(df.head(10), use_container_width=True)
 
 # --------------------------------------------------
 # 5. PREVISIONE ADR
 # --------------------------------------------------
-elif page == "Previsione ADR":
-    st.title("Previsione ADR")
+elif page == "ADR Prediction":
+    st.title("ADR Prediction")
     st.write(
-        "Inserisci le caratteristiche della prenotazione per stimare "
-        "la tariffa media giornaliera della camera."
+        "Enter the booking details to estimate "
+        "the average daily room rate."
     )
     input_data = {}
     with st.form("prediction_form"):
@@ -151,7 +151,7 @@ elif page == "Previsione ADR":
             with target_col:
                 if feature not in df.columns:
                     st.warning(
-                        f"Variabile non disponibile nel dataset: {feature}"
+                        f"Feature not available in the dataset: {feature}"
                     )
                     continue
                 series = df[feature]
@@ -181,7 +181,7 @@ elif page == "Previsione ADR":
                             feature.replace("_", " ").title()
                         )
         submitted = st.form_submit_button(
-            "Prevedi ADR",
+            "Predict ADR",
             use_container_width=True
         )
     if submitted:
@@ -201,7 +201,7 @@ elif page == "Previsione ADR":
         ]
         if missing_features:
             st.error(
-                "Non è stato possibile raccogliere alcune variabili del modello: "
+                "Some model features could not be collected: "
                 + ", ".join(missing_features)
             )
         else:
@@ -212,33 +212,33 @@ elif page == "Previsione ADR":
             try:
                 prediction = float(model.predict(input_df)[0])
                 st.markdown("---")
-                st.subheader("Risultato della previsione")
+                st.subheader("Prediction Result")
                 st.metric(
-                    "ADR previsto",
+                    "Predicted ADR",
                     f"€{prediction:.2f}"
                 )
                 if prediction < 0:
                     st.warning(
-                        "Il modello ha restituito un valore negativo. "
-                        "Controlla il modello e i dati di addestramento."
+                        "The model returned a negative value. "
+                        "Check the model and the training data."
                     )
             except Exception as error:
                 st.error(
-                    f"Previsione non riuscita: {error}"
+                    f"Prediction failed: {error}"
                 )
 
 # --------------------------------------------------
 # 6. ESPLORA I DATI
 # --------------------------------------------------
-elif page == "Esplora i dati":
-    st.title("Esplora il dataset")
+elif page == "Explore Data":
+    st.title("Explore the Dataset")
     filtered_df = df.copy()
     if "hotel" in df.columns:
         hotel_options = sorted(
             df["hotel"].dropna().astype(str).unique()
         )
         selected_hotels = st.multiselect(
-            "Seleziona il tipo di hotel",
+            "Select the Hotel Type",
             hotel_options,
             default=hotel_options
         )
@@ -252,7 +252,7 @@ elif page == "Esplora i dati":
         max_adr = float(filtered_df["adr"].max())
         if min_adr < max_adr:
             adr_range = st.slider(
-                "Filtra l'intervallo di ADR",
+                "Filter by ADR Range",
                 min_value=min_adr,
                 max_value=max_adr,
                 value=(min_adr, max_adr)
@@ -266,24 +266,24 @@ elif page == "Esplora i dati":
     col1, col2 = st.columns(2)
     with col1:
         st.metric(
-            "Record filtrati",
+            "Filtered Records",
             f"{len(filtered_df):,}"
         )
     with col2:
         if len(filtered_df) > 0:
             st.metric(
-                "ADR medio filtrato",
+                "Average ADR for Filtered Records",
                 f"€{filtered_df['adr'].mean():.2f}"
             )
         else:
-            st.metric("ADR medio filtrato", "N/D")
-    st.subheader("Dati filtrati")
+            st.metric("Average ADR for Filtered Records", "N/A")
+    st.subheader("Filtered Data")
     st.dataframe(
         filtered_df.head(500),
         use_container_width=True
     )
     st.download_button(
-        "Scarica i dati filtrati",
+        "Download Filtered Data",
         data=filtered_df.to_csv(index=False).encode("utf-8"),
         file_name="filtered_hotel_data.csv",
         mime="text/csv"
@@ -292,11 +292,11 @@ elif page == "Esplora i dati":
 # --------------------------------------------------
 # 7. PRESTAZIONI DEL MODELLO
 # --------------------------------------------------
-elif page == "Modello":
-    st.title("Prestazioni del modello")
+elif page == "Model":
+    st.title("Model Performance")
     st.write(
-        "Le seguenti metriche valutano il modello "
-        "sul test set, escluso dall'addestramento."
+        "The following metrics evaluate the model "
+        "on the test set, which was excluded from training."
     )
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -320,23 +320,23 @@ elif page == "Modello":
             f"{metrics['R2']:.3f}"
         )
     st.markdown("---")
-    st.subheader("Come interpretare le metriche")
+    st.subheader("How to Interpret the Metrics")
     st.write(
-            "**MAPE:** Differenza in percentuale fra la media predetta e quella effettiva del adr "
+            "**MAPE:** Percentage difference between the predicted and actual mean ADR "
         )
     st.write(
-        "**MAE:** differenza assoluta media tra "
-        "l'ADR previsto e quello effettivo."
+        "**MAE:** mean absolute difference between "
+        "the predicted and actual ADR."
     )
     st.write(
-        "**RMSE:** errore di previsione che penalizza "
-        "maggiormente gli errori grandi."
+        "**RMSE:** prediction error that penalizes "
+        "larger errors more heavily."
     )
     st.write(
-        "**R²:** proporzione della variabilità del target "
-        "spiegata dal modello."
+        "**R²:** proportion of the variation in the target "
+        "explained by the model."
     )
     st.info(
-        "Valori più bassi di MAE e RMSE sono generalmente migliori. "
-        "Un R² più vicino a 1 indica un adattamento migliore."
+        "Lower MAE and RMSE values are generally better. "
+        "An R² closer to 1 indicates a better fit."
     )
